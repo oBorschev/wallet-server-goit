@@ -9,9 +9,4 @@ router.get("/", function(req, res) {
 router.get("/costs", getAllCosts);
 router.get("/costs/:id", getCostsById);
 
-// router.get("/costs/:category", function(req, res) {
-//   console.dir(req.query.category);
-//   console.log("req.params");
-// });
-
 module.exports = router;

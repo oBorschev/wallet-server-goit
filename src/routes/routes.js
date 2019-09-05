@@ -1,12 +1,17 @@
 const { Router } = require("express");
 const router = Router();
-const { getAllCosts, getCostsById } = require("./controller");
+const controller = require("./controller");
+const bodyParser = require("body-parser");
+
+const jsonParser = bodyParser.json();
 
 router.get("/", function(req, res) {
   res.send("Home page. Make a request to the posts");
 });
-
-router.get("/costs", getAllCosts);
-router.get("/costs/:id", getCostsById);
+router.post("/costs", jsonParser, controller.createCost);
+router.get("/costs", controller.getCost);
+router.get("/costs/:id", controller.getCostsById);
+router.patch("/costs/:id", jsonParser, controller.patchCost);
+router.delete("/costs/:id", controller.deleteCost);
 
 module.exports = router;

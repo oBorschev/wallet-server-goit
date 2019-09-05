@@ -1,34 +1,61 @@
-const path = require("path");
-const costsPath = path.join(__dirname, "../db/costs/all-costs.json");
-const costsFile = require(costsPath);
+const costs = require("../models/costs_db");
 
-const getAllCosts = function(req, res) {
-  const category = req.query.category;
-
-  if (category !== undefined) {
-    const findedCostsObjects = costsFile.filter(costs =>
-      costs.categories.includes(category)
-    );
-    res.status(200).send(findedCostsObjects);
-  } else {
-    res.status(200).send(costsFile);
-  }
-};
-
-const getCostsById = function(req, res) {
-  const convertToStringParams = JSON.stringify(req.params);
-  const getIdCosts = costsFile.map(item => {
-    if (convertToStringParams.includes(item.id)) return item;
-    else
-      return {
-        status: "no products",
-        products: []
-      };
+exports.getCost = function(req, res) {
+  costs.getAllCosts(function(err, result) {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    res.send(result);
   });
-  res.status(201).json(getIdCosts);
 };
 
-module.exports = {
-  getAllCosts,
-  getCostsById
+exports.createCost = function(req, res) {
+  if (!req.body) res.sendStatus(400);
+  const cost = req.body;
+
+  costs.create(cost, function(err, result) {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    res.send(cost);
+  });
+};
+
+exports.getCostsById = function(id, res) {
+  const getId = id.params.id;
+
+  costs.findById(getId, function(err, result) {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    res.send(result);
+  });
+};
+
+exports.patchCost = function(req, res) {
+  const getId = req.params.id;
+  const cost = req.body;
+  console.log(cost);
+  costs.update(getId, { $set: cost }, function(err, result) {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    res.sendStatus(200);
+    console.log("Updated OK!");
+  });
+};
+exports.deleteCost = function(id, res) {
+  const getId = id.params.id;
+  costs.delete(getId, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    res.sendStatus(200);
+    console.log("Deleted OK!");
+  });
 };
